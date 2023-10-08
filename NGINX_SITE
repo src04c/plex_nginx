@@ -1,0 +1,168 @@
+server {
+#    listen 80 default_server;
+#    listen [::]:80 default_server;
+    root /var/www/html;
+    server_name <INSERT DNS NAME>;
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate <PATH TO PEM>; # managed by Certbot
+    ssl_certificate_key <PATH TO KEY>; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+  send_timeout 100m;
+  ssl_stapling on;
+  ssl_stapling_verify on;
+  add_header Strict-Transport-Security "max-age=31536000; includeSubdomains" always;
+
+
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header X-Forwarded-Proto $scheme;
+  proxy_set_header Host $server_addr;
+  proxy_set_header Referer $server_addr;
+  proxy_set_header Origin $server_addr; 
+  proxy_cookie_path / "/; HTTPOnly; Secure";
+
+  proxy_redirect off;
+  proxy_buffering off;
+
+  location / {
+    proxy_pass http://<INSERT IP>:32400;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubdomains" always;
+    proxy_set_header X-Plex-Client-Identifier $http_x_plex_client_identifier;
+    proxy_set_header X-Plex-Device $http_x_plex_device;
+    proxy_set_header X-Plex-Device-Name $http_x_plex_device_name;
+    proxy_set_header X-Plex-Platform $http_x_plex_platform;
+    proxy_set_header X-Plex-Platform-Version $http_x_plex_platform_version;
+    proxy_set_header X-Plex-Product $http_x_plex_product;
+    proxy_set_header X-Plex-Token $http_x_plex_token;
+    proxy_set_header X-Plex-Version $http_x_plex_version;
+    proxy_set_header X-Plex-Nocache $http_x_plex_nocache;
+    proxy_set_header X-Plex-Provides $http_x_plex_provides;
+    proxy_set_header X-Plex-Device-Vendor $http_x_plex_device_vendor;
+    proxy_set_header X-Plex-Model $http_x_plex_model;
+    proxy_set_header X-Plex-Device-Screen-Resolution $http_x_plex_device_screen_resolution;
+    proxy_set_header X-Plex-Sync-Version $http_x_plex_sync_version;
+    proxy_set_header X-Plex-Language $http_x_plex_language;
+    proxy_set_header X-Plex-Text-Format $http_x_plex_text_format;
+    proxy_set_header Accept-Language $http_accept_language;
+    proxy_set_header X-Plex-Content-Compressed-Length $http_x_plex_content_compressed_length;
+    proxy_set_header X-Plex-Content-Original-Length $http_x_plex_content_original_lenght;
+    proxy_set_header X-Plex-Protocol $http_x_plex_protocol;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    #proxy_set_header X-Forward-For $proxy_add_x_forward_for;
+    proxy_set_header X-Read-IP $remote_addr;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Sec-WebSocket-Extensions $http_sec_websocket_extensions;
+    proxy_set_header Sec-WebSocket-Key $http_sec_websocket_key;
+    proxy_set_header Sec-WebSocket-Version $http_sec_websocket_version;
+    proxy_set_header inclueExternalMedia $http_includeexternalmedia;
+    proxy_set_header  includeConcerts $http_includeconcerts;
+    proxy_set_header includeExtras $http_includeextras;
+    proxy_set_header includeOnDeck $http_includeondeck;
+    proxy_set_header includePopularLeaves $http_includepopularleaves;
+    proxy_set_header includePreferences $http_includepreferences;
+    proxy_set_header includeChapters $http_includechapters;
+    proxy_set_header includeStations $http_includestations;
+    proxy_set_header asyncAugmentMetadata $http_includeaugentmetadat;
+    proxy_set_header  asyncCheckFiles $http_asynccheckfiles;
+    proxy_set_header asyncRefreshAnalysis $http_asyncrefreshanalysis;
+    proxy_set_header asyncRefreshLocalMediaAgent $http_asyncrefreshlocalmediaagent;
+ 
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1000;
+    gzip_proxied any;
+    gzip_types text/plain text/css text/xml application/xml text/javascript application/x-javascript image/svg+xml;
+    gzip_disable "MSIE [1-6]\.";
+
+    client_max_body_size 100M;
+
+
+  # Web Sockets
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}  
+location /media/ {
+    proxy_pass http://<INSERT IP>:32400/media/;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubdomains" always;
+    proxy_set_header X-Plex-Client-Identifier $http_x_plex_client_identifier;
+    proxy_set_header X-Plex-Device $http_x_plex_device;
+    proxy_set_header X-Plex-Device-Name $http_x_plex_device_name;
+    proxy_set_header X-Plex-Platform $http_x_plex_platform;
+    proxy_set_header X-Plex-Platform-Version $http_x_plex_platform_version;
+    proxy_set_header X-Plex-Product $http_x_plex_product;
+    proxy_set_header X-Plex-Token $http_x_plex_token;
+    proxy_set_header X-Plex-Version $http_x_plex_version;
+    proxy_set_header X-Plex-Nocache $http_x_plex_nocache;
+    proxy_set_header X-Plex-Provides $http_x_plex_provides;
+    proxy_set_header X-Plex-Device-Vendor $http_x_plex_device_vendor;
+    proxy_set_header X-Plex-Model $http_x_plex_model;
+    proxy_set_header X-Plex-Device-Screen-Resolution $http_x_plex_device_screen_resolution;
+    proxy_set_header X-Plex-Sync-Version $http_x_plex_sync_version;
+    proxy_set_header X-Plex-Language $http_x_plex_language;
+    proxy_set_header X-Plex-Text-Format $http_x_plex_text_format;
+    proxy_set_header Accept-Language $http_accept_language;
+    proxy_set_header X-Plex-Content-Compressed-Length $http_x_plex_content_compressed_length;
+    proxy_set_header X-Plex-Content-Original-Length $http_x_plex_content_original_lenght;
+    proxy_set_header X-Plex-Protocol $http_x_plex_protocol;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    #proxy_set_header X-Forward-For $proxy_add_x_forward_for;
+    proxy_set_header X-Read-IP $remote_addr;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Sec-WebSocket-Extensions $http_sec_websocket_extensions;
+    proxy_set_header Sec-WebSocket-Key $http_sec_websocket_key;
+    proxy_set_header Sec-WebSocket-Version $http_sec_websocket_version;
+
+    proxy_set_header inclueExternalMedia $http_includeexternalmedia;
+    proxy_set_header  includeConcerts $http_includeconcerts;
+    proxy_set_header includeExtras $http_includeextras;
+    proxy_set_header includeOnDeck $http_includeondeck;
+    proxy_set_header includePopularLeaves $http_includepopularleaves;
+    proxy_set_header includePreferences $http_includepreferences;
+    proxy_set_header includeChapters $http_includechapters;
+    proxy_set_header includeStations $http_includestations;
+    proxy_set_header asyncAugmentMetadata $http_includeaugentmetadat;
+    proxy_set_header  asyncCheckFiles $http_asynccheckfiles;
+    proxy_set_header asyncRefreshAnalysis $http_asyncrefreshanalysis;
+    proxy_set_header asyncRefreshLocalMediaAgent $http_asyncrefreshlocalmediaagent;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1000;
+    gzip_proxied any;
+    gzip_types text/plain text/css text/xml application/xml text/javascript application/x-javascript image/svg+xml;
+    gzip_disable "MSIE [1-6]\.";
+
+    client_max_body_size 100M;
+
+
+    # Web Sockets
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}
+  location /rss/ {
+    proxy_pass http://<INSERT ALERTNATE IP>/rss/;
+}
+}
+server {
+    if ($host = <INSERT DNS NAME>) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    server_name <INSERT DNS NAME>;
+
+
+
+
+    listen 80;
+    return 404; # managed by Certbot
+
+
+}
